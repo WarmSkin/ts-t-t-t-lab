@@ -12,36 +12,38 @@ const winningCombos = [
 
 
 /*---------------------------- Variables (state) ----------------------------*/
-let board, turn, winner, tie
+let board:number[], turn:number, winner:boolean, tie:boolean
 
 
 /*------------------------ Cached Element References ------------------------*/
-const squareEls = document.querySelectorAll('.sqr')
-const messageEl = document.getElementById('message')
-const resetBtnEl = document.querySelector('button')
+const squareEls = document.querySelectorAll('.sqr')!
+const messageEl = document.getElementById('message')!
+const resetBtnEl = document.querySelector<HTMLButtonElement>('button')!
+const boardEl = document.querySelector<HTMLAreaElement>('.board')!
 
 /*----------------------------- Event Listeners -----------------------------*/
-document.querySelector('.board').addEventListener('click', handleClick)
+boardEl.addEventListener('click', handleClick)
 resetBtnEl.addEventListener('click', init)
 /*-------------------------------- Functions --------------------------------*/
 
 init()
 
-function init() {
-  board = [null, 1, null, -1, null, 1, -1, null, null]
+function init(): void {
+  board = [0, 0, 0, 0, 0, 0, 0, 0, 0]
   turn = 1
   winner = false
   tie = false
   render()
 }
 
-function placePiece(idx) {
+function placePiece(idx:number): void {
   board[idx] = turn
 }
 
-function handleClick(evt) {
-  console.log(evt.target.id)
-  const sqIdx = parseInt(evt.target.id.replace('sq', ''))
+function handleClick({target}:MouseEvent): void {
+  console.log(target)
+  if (!(target instanceof HTMLElement)) return
+  const sqIdx = parseInt(target.id.replace('sq', ''))
 
   if (isNaN(sqIdx) || board[sqIdx] || winner) return
   placePiece(sqIdx)
@@ -51,12 +53,12 @@ function handleClick(evt) {
   render()
 }
 
-function checkForTie() {
-  if (board.includes(null)) return
+function checkForTie(): void {
+  if (board.includes(0)) return
   tie = true
 }
 
-function checkForWinner() {
+function checkForWinner(): void {
   winningCombos.forEach(combo => {
     if (Math.abs(board[combo[0]] + board[combo[1]] + board[combo[2]]) === 3) {
       winner = true
@@ -64,18 +66,18 @@ function checkForWinner() {
   })
 }
 
-function switchPlayerTurn() {
+function switchPlayerTurn(): void {
   if (winner) return
   turn *= -1
 }
 
 
-function render() {
+function render(): void {
   updateBoard()
   updateMessage()
 }
 
-function updateBoard() {
+function updateBoard(): void {
   board.forEach((boardVal, idx) => {
     if (boardVal === 1) {
       squareEls[idx].textContent = 'X'
@@ -87,7 +89,7 @@ function updateBoard() {
   })
 }
 
-function updateMessage() {
+function updateMessage(): void {
   if (!winner && !tie) {
     messageEl.textContent = `It's ${turn === 1 ? 'X' : 'O'}'s turn!`
   } else if (!winner && tie) {
